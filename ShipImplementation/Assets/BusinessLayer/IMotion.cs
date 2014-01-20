@@ -10,8 +10,22 @@ interface IMotion
     void calculatePitchAngle();
     void calculateHeaveHeight();
 
-    float RollAngle;
-    float PitchAngle;
-    float HeaveHeight;
+    float RollAngle
+    {
+        get;
+        set;
+    }
+
+    float PitchAngle
+    {
+        get;
+        set;
+    }
+
+    float HeaveHeight
+    {
+        get;
+        set;
+    }
 }
 
