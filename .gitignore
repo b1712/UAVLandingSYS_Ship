@@ -5,7 +5,7 @@ UnityGenerated/
 Library/
  
 # ----[ Visual Studio / MonoDevelop generated ]------- #
- 
+ShipImplementation/TestResults 
 ExportedObj/
 *.svd
 *.userprefs
