@@ -11,28 +11,113 @@ namespace Assets.BusinessLayer
         SeaState currentSeaState;
         WaveDirection currentWaveDirection;
         ShipSpeed currentShipSpeed;
+        IState stateStrategy;
+        private float relativeSpeed = 0.0f;
+        private List<float> heaveArray = new List<float>();
+        //private List<float> rollArray = new List<float>();
+        //private List<float> pitchArray = new List<float>();
+        //private List<List<float>> motionArray = new List<List<float>>();
+        private readonly int numberOfWaves = 6;
+        private float waveSampleFactor = 20;
+        private float heaveValue = 0;
 
-        public ShipMotion(SeaState state, WaveDirection wind, ShipSpeed speed)
+        public ShipMotion(SeaState state, WaveDirection direction, ShipSpeed speed)
         {
             currentSeaState = state;
-            currentWaveDirection = wind;
+            currentWaveDirection = direction;
             currentShipSpeed = speed;
+
+            setSeaStateStrategy();
+            stateStrategy.newWaveStatistics();
+
+            //calculate the relative speed only once for each run of the application
+            calculateRelativeSpeed();
+
         }
 
-        public string calculateShipMotion()
+        public List<float> calculateShipMotion()
         {
-            // will be returning an array of floats
-            int wave = (int)currentWaveDirection;
-            int state = (int)currentSeaState;
-            int speed = (int)currentShipSpeed;
+            populateHeaveArray();
+            //populateRollArray();
+            //populatePitchArray();
 
-            string test1 = wave.ToString();
-            string test2 = state.ToString();
-            string test3 = speed.ToString();
+            return heaveArray;
+        }
 
-            string message = "Wave direction = " + test1 +
-                             ", Sea State = " + test2 + ", Ship Speed = " + test3;
-            return message;
+        private void setSeaStateStrategy()
+        {
+            switch ((int)currentSeaState)
+            {
+                case 0:
+                    stateStrategy = new SeaStateZero();
+                    break;
+                case 3:
+                    stateStrategy = new SeaStateThree();
+                    break;
+                case 6:
+                    stateStrategy = new SeaStateSix();
+                    break;
+                default:
+                    // default is set to Sea State 0 the same as case 0
+                    stateStrategy = new SeaStateZero();
+                    break;
+            }
+        }
+
+        private void calculateRelativeSpeed()
+        {
+            switch ((int)currentWaveDirection)
+            {
+                case 0:
+                    relativeSpeed = (float)currentShipSpeed + stateStrategy.WaveSpeed;
+                    break;
+                case 45:
+                    relativeSpeed = (float)currentShipSpeed + stateStrategy.WaveSpeed / 2;
+                    break;
+                case 90:
+                    relativeSpeed = (float)stateStrategy.WaveSpeed;
+                    break;
+                default:
+                    //default is set to 0 degrees, the same as case 0 
+                    relativeSpeed = (float)currentShipSpeed + stateStrategy.WaveSpeed;
+                    break;
+            }
+
+        }
+
+        private void populateHeaveArray()
+        {
+            if (currentSeaState != SeaState.SeaState0)
+            {
+                for (int i = 0; i < numberOfWaves; i++)
+                {
+                    float samples = stateStrategy.Wavelength / relativeSpeed * waveSampleFactor;
+
+                    for (int j = 0; j < samples; j++)
+                    {
+                        heaveValue = stateStrategy.WaveHeight * (float)Math.Sin(2 * Math.PI * j / samples);
+
+                        heaveArray.Add(heaveValue);
+                    }
+
+                    stateStrategy.newWaveStatistics();
+                }
+            }
+            else
+            {
+                heaveArray.Add(stateStrategy.WaveHeight);
+            }
+            
+        }
+
+        private void populateRollArray()
+        {
+
+        }
+
+        private void populatePitchArray()
+        {
+
         }
 	}
 }

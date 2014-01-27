@@ -11,16 +11,16 @@ public class ShipModelController{
 
     ShipMotion shipMotion;
 
-    public string initialShipSetup(SeaState state, WaveDirection wind, ShipSpeed speed)
+    public List<float> initialShipSetup(SeaState state, WaveDirection wind, ShipSpeed speed)
     {
         //will be returning an array of floats
         
         shipMotion = new ShipMotion(state, wind, speed);
 
         // float array = 
-        string message = shipMotion.calculateShipMotion();
+        //string message = 
 
-        return message;
+        return shipMotion.calculateShipMotion();
     }
  
 }
