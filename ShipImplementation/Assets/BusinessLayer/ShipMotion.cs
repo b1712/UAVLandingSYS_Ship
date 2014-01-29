@@ -13,13 +13,20 @@ namespace Assets.BusinessLayer
         ShipSpeed currentShipSpeed;
         IState stateStrategy;
         private float relativeSpeed = 0.0f;
+        private List<int> samplesPerWaveList = new List<int>();
         private List<float> heaveArray = new List<float>();
         //private List<float> rollArray = new List<float>();
-        //private List<float> pitchArray = new List<float>();
-        //private List<List<float>> motionArray = new List<List<float>>();
-        private readonly int numberOfWaves = 6;
-        private float waveSampleFactor = 20;
-        private float heaveValue = 0;
+        private List<float> pitchArray = new List<float>();
+        private List<List<float>> motionArray = new List<List<float>>();
+        private float waveSampleFactor = 30.0f;
+        private float pitchIncrementTotal = 0.0f;
+        private float currentPitchIncrement = 0.0f;
+        private float nextPitchIncrement = 0.0f;
+        private float nextPitchAngle = 0.0f;
+        private float heaveValue = 0.0f;
+
+        private readonly int NUMBER_OF_WAVES = 6;
+        private readonly float MAX_PITCH_ANGLE = 3.0f;
 
         public ShipMotion(SeaState state, WaveDirection direction, ShipSpeed speed)
         {
@@ -35,13 +42,16 @@ namespace Assets.BusinessLayer
 
         }
 
-        public List<float> calculateShipMotion()
+        public List<List<float>> calculateShipMotion()
         {
             populateHeaveArray();
             //populateRollArray();
-            //populatePitchArray();
+            populatePitchArray();
 
-            return heaveArray;
+            motionArray.Add(heaveArray);
+            motionArray.Add(pitchArray);
+
+            return motionArray;
         }
 
         private void setSeaStateStrategy()
@@ -89,9 +99,12 @@ namespace Assets.BusinessLayer
         {
             if (currentSeaState != SeaState.SeaState0)
             {
-                for (int i = 0; i < numberOfWaves; i++)
+                for (int i = 0; i < NUMBER_OF_WAVES; i++)
                 {
-                    float samples = stateStrategy.Wavelength / relativeSpeed * waveSampleFactor;
+                    // wavelength / relative speed will give time in seconds to travel one wavelength.
+                    // if this is multiplied by the waveSampleFactor (30) it should approximate
+                    // 30 fps
+                    int samples = (int)(stateStrategy.Wavelength / relativeSpeed * waveSampleFactor);
 
                     for (int j = 0; j < samples; j++)
                     {
@@ -99,6 +112,9 @@ namespace Assets.BusinessLayer
 
                         heaveArray.Add(heaveValue);
                     }
+
+                    // Record the number of samples for each random wave
+                    samplesPerWaveList.Add(samples);
 
                     stateStrategy.newWaveStatistics();
                 }
@@ -110,14 +126,55 @@ namespace Assets.BusinessLayer
             
         }
 
+        private void populatePitchArray()
+        {
+
+
+            if (currentSeaState != SeaState.SeaState0)
+            {
+
+                for (int i = 0; i < NUMBER_OF_WAVES; i++)
+                {
+                    currentPitchIncrement = 0;
+                    
+                    for (int j = 0; j < samplesPerWaveList[i]; j++)
+                    {
+                        nextPitchAngle = (MAX_PITCH_ANGLE *
+                            (float)Math.Sin(2 * Math.PI * j / samplesPerWaveList[i]));
+
+
+                        nextPitchIncrement = nextPitchAngle - currentPitchIncrement;
+
+                        //if (j == (samplesPerWaveList[i] - 1))
+                        //{
+                        //    nextPitchIncrement -= pitchIncrementTotal;
+                        //}
+                        //else
+                        //{
+                            
+                        //}
+
+                        //pitchArray.Add(nextPitchIncrement);
+
+                        pitchArray.Add(nextPitchAngle);
+
+                        //pitchIncrementTotal = nextPitchIncrement;
+
+                        //currentPitchIncrement = nextPitchAngle;
+                    }
+                }
+
+            }
+            else
+            {
+                pitchArray.Add(stateStrategy.WaveHeight);
+            }
+        }
+
         private void populateRollArray()
         {
 
         }
 
-        private void populatePitchArray()
-        {
-
-        }
 	}
 }

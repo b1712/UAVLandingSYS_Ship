@@ -11,7 +11,7 @@ public class ShipModelController{
 
     ShipMotion shipMotion;
 
-    public List<float> initialShipSetup(SeaState state, WaveDirection wind, ShipSpeed speed)
+    public List<List<float>> initialShipSetup(SeaState state, WaveDirection wind, ShipSpeed speed)
     {
         //will be returning an array of floats
         
