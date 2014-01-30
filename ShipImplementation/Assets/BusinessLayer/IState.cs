@@ -26,6 +26,11 @@ namespace Assets.BusinessLayer
             set;
         }
 
+        float MaxPitch
+        {
+            get;
+        }
+
         void newWaveStatistics();
 	}
 }

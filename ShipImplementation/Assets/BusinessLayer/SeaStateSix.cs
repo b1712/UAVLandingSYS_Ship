@@ -15,6 +15,7 @@ namespace Assets.BusinessLayer
         private readonly float MAX_LENGTH = 100.0f;
         private readonly float MIN_WAVESPEED = 4.0f;
         private readonly float MAX_WAVESPEED = 8.1f;
+        private readonly float MAX_PITCH_ANGLE = 3.0f;
 
         private float waveHeight;
         private float wavelength;
@@ -42,8 +43,12 @@ namespace Assets.BusinessLayer
             set { waveSpeed = value; }
         }
 
-        #endregion
+        public float MaxPitch
+        {
+            get { return MAX_PITCH_ANGLE; }
+        }
 
+        #endregion
 
         public void newWaveStatistics()
         {
@@ -51,7 +56,6 @@ namespace Assets.BusinessLayer
             wavelength = selectFromRange(MIN_LENGTH, MAX_LENGTH);
             waveSpeed = selectFromRange(MIN_WAVESPEED, MAX_WAVESPEED);
         }
-
 
         public float selectFromRange(float min, float max)
         {

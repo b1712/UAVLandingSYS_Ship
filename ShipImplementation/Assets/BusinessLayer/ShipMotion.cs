@@ -13,20 +13,17 @@ namespace Assets.BusinessLayer
         ShipSpeed currentShipSpeed;
         IState stateStrategy;
         private float relativeSpeed = 0.0f;
+        private float relativeWavelengthFactor = 0.0f;
         private List<int> samplesPerWaveList = new List<int>();
         private List<float> heaveArray = new List<float>();
         //private List<float> rollArray = new List<float>();
         private List<float> pitchArray = new List<float>();
         private List<List<float>> motionArray = new List<List<float>>();
         private float waveSampleFactor = 30.0f;
-        private float pitchIncrementTotal = 0.0f;
-        private float currentPitchIncrement = 0.0f;
-        private float nextPitchIncrement = 0.0f;
         private float nextPitchAngle = 0.0f;
         private float heaveValue = 0.0f;
 
         private readonly int NUMBER_OF_WAVES = 6;
-        private readonly float MAX_PITCH_ANGLE = 3.0f;
 
         public ShipMotion(SeaState state, WaveDirection direction, ShipSpeed speed)
         {
@@ -38,8 +35,7 @@ namespace Assets.BusinessLayer
             stateStrategy.newWaveStatistics();
 
             //calculate the relative speed only once for each run of the application
-            calculateRelativeSpeed();
-
+            calculateRelativeValues();
         }
 
         public List<List<float>> calculateShipMotion()
@@ -74,22 +70,26 @@ namespace Assets.BusinessLayer
             }
         }
 
-        private void calculateRelativeSpeed()
+        private void calculateRelativeValues()
         {
             switch ((int)currentWaveDirection)
             {
                 case 0:
                     relativeSpeed = (float)currentShipSpeed + stateStrategy.WaveSpeed;
+                    relativeWavelengthFactor = 1.0f;
                     break;
                 case 45:
                     relativeSpeed = (float)currentShipSpeed + stateStrategy.WaveSpeed / 2;
+                    relativeWavelengthFactor = 1.5f;
                     break;
                 case 90:
                     relativeSpeed = (float)stateStrategy.WaveSpeed;
+                    relativeWavelengthFactor = 1.0f;
                     break;
                 default:
                     //default is set to 0 degrees, the same as case 0 
                     relativeSpeed = (float)currentShipSpeed + stateStrategy.WaveSpeed;
+                    relativeWavelengthFactor = 1.0f;
                     break;
             }
 
@@ -99,75 +99,59 @@ namespace Assets.BusinessLayer
         {
             if (currentSeaState != SeaState.SeaState0)
             {
+
                 for (int i = 0; i < NUMBER_OF_WAVES; i++)
                 {
                     // wavelength / relative speed will give time in seconds to travel one wavelength.
                     // if this is multiplied by the waveSampleFactor (30) it should approximate
                     // 30 fps
-                    int samples = (int)(stateStrategy.Wavelength / relativeSpeed * waveSampleFactor);
+
+                    int samples = (int)(stateStrategy.Wavelength * relativeWavelengthFactor 
+                        / relativeSpeed * waveSampleFactor);
 
                     for (int j = 0; j < samples; j++)
                     {
                         heaveValue = stateStrategy.WaveHeight * (float)Math.Sin(2 * Math.PI * j / samples);
-
                         heaveArray.Add(heaveValue);
                     }
-
                     // Record the number of samples for each random wave
                     samplesPerWaveList.Add(samples);
-
-                    stateStrategy.newWaveStatistics();
                 }
+
+                stateStrategy.newWaveStatistics();
             }
             else
             {
                 heaveArray.Add(stateStrategy.WaveHeight);
             }
-            
         }
 
         private void populatePitchArray()
         {
-
-
             if (currentSeaState != SeaState.SeaState0)
             {
-
                 for (int i = 0; i < NUMBER_OF_WAVES; i++)
                 {
-                    currentPitchIncrement = 0;
                     
                     for (int j = 0; j < samplesPerWaveList[i]; j++)
                     {
-                        nextPitchAngle = (MAX_PITCH_ANGLE *
-                            (float)Math.Sin(2 * Math.PI * j / samplesPerWaveList[i]));
-
-
-                        nextPitchIncrement = nextPitchAngle - currentPitchIncrement;
-
-                        //if (j == (samplesPerWaveList[i] - 1))
-                        //{
-                        //    nextPitchIncrement -= pitchIncrementTotal;
-                        //}
-                        //else
-                        //{
-                            
-                        //}
-
-                        //pitchArray.Add(nextPitchIncrement);
-
+                        if ((int)currentWaveDirection != 90)
+                        {
+                            nextPitchAngle = (stateStrategy.MaxPitch * relativeWavelengthFactor
+                                * (float)Math.Sin(2 * Math.PI * j / samplesPerWaveList[i]));
+                        }
+                        else
+                        {
+                            nextPitchAngle = 0.0f;
+                        }
                         pitchArray.Add(nextPitchAngle);
-
-                        //pitchIncrementTotal = nextPitchIncrement;
-
-                        //currentPitchIncrement = nextPitchAngle;
                     }
+                    
                 }
-
             }
             else
             {
-                pitchArray.Add(stateStrategy.WaveHeight);
+                pitchArray.Add(stateStrategy.MaxPitch);
             }
         }
 

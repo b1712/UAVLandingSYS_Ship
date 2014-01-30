@@ -9,7 +9,6 @@ namespace Asset.PresentationLayer
 
     public class ShipBehaviourScript : MonoBehaviour
     {
-
         public SeaState currentSeaState = SeaState.SeaState0;
         public WaveDirection currentWaveDirection = WaveDirection.Zero_Degrees;
         public ShipSpeed currentShipSpeed = ShipSpeed.Half;
@@ -26,7 +25,7 @@ namespace Asset.PresentationLayer
         {
             shipController = new ShipModelController();
             motionArray = shipController.initialShipSetup(currentSeaState, currentWaveDirection, currentShipSpeed);
-            //print(test);
+
             count = 0;
 
             heaveArray = motionArray[0];
@@ -43,13 +42,9 @@ namespace Asset.PresentationLayer
         {
             modCount = count % heaveArray.Count;
 
-            //Transform myTransform = transform;
-            //myTransform.position = gameObject.transform.position + (Quaternion.Euler(0, heaveArray[modCount], 0) * new Vector3(0, 0, 0));
-            //myTransform.position = gameObject.transform.position + (Quaternion.Euler(0, 0, 0) * new Vector3(0, heaveArray[modCount], 0));
-            gameObject.transform.position = new Vector3(0, heaveArray[modCount], 40);
-            //gameObject.transform.Rotate(new Vector3(pitchArray[modCount], 0, 0));
-            //gameObject.transform.Rotate(-pitchArray[modCount], 0, 0, Space.World);
-            gameObject.transform.eulerAngles = new Vector3(pitchArray[modCount], 0, 0);
+            gameObject.transform.Translate(0, heaveArray[modCount] * Time.deltaTime, 0);
+
+            transform.eulerAngles = new Vector3( -pitchArray[modCount], 0, 0 * Time.deltaTime);
             count++;
 
             print(pitchArray[modCount].ToString() + "   " + heaveArray[modCount]);
@@ -63,8 +58,5 @@ namespace Asset.PresentationLayer
                 print("**************" + finishtime.ToString());
             }
         }
-
-
     }
-
 }
