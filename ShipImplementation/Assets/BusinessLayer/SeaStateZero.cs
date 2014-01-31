@@ -13,6 +13,7 @@ namespace Assets.BusinessLayer
         private readonly float LENGTH = 0.0f;
         private readonly float FREQUENCY = 0.0f;
         private readonly float MAX_PITCH_ANGLE = 0.0f;
+        private readonly float MAX_ROLL_ANGLE = 0.0f;
 
         private float waveHeight;
         private float wavelength;
@@ -43,6 +44,11 @@ namespace Assets.BusinessLayer
         public float MaxPitch
         {
             get { return MAX_PITCH_ANGLE; }
+        }
+
+        public float MaxRoll
+        {
+            get { return MAX_ROLL_ANGLE; }
         }
 
         #endregion

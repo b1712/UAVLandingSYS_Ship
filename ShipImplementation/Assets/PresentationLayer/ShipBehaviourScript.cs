@@ -15,6 +15,7 @@ namespace Asset.PresentationLayer
         ShipModelController shipController;
         private List<float> heaveArray;
         private List<float> pitchArray;
+        private List<float> rollArray;
         private List<List<float>> motionArray = new List<List<float>>();
         private int count;
         private int modCount;
@@ -30,6 +31,7 @@ namespace Asset.PresentationLayer
 
             heaveArray = motionArray[0];
             pitchArray = motionArray[1];
+            rollArray = motionArray[2];
 
             // refresh rate is set to half the screen refresh rate which is 60Hz
             QualitySettings.vSyncCount = 2;
@@ -42,12 +44,16 @@ namespace Asset.PresentationLayer
         {
             modCount = count % heaveArray.Count;
 
-            gameObject.transform.Translate(0, heaveArray[modCount] * Time.deltaTime, 0);
+            gameObject.transform.Translate(0, heaveArray[modCount] * Time.deltaTime, 0,Space.World);
 
-            transform.eulerAngles = new Vector3( -pitchArray[modCount], 0, 0 * Time.deltaTime);
+            transform.eulerAngles = new Vector3(-pitchArray[modCount], 0, -rollArray[modCount]); //rollArray[modCount] * Time.deltaTime);           
+            
             count++;
 
-            print(pitchArray[modCount].ToString() + "   " + heaveArray[modCount]);
+            //print(pitchArray[modCount].ToString() + "   " + heaveArray[modCount] + "   " + rollArray[modCount] + "   " + count);
+
+
+            printCoordinates();
 
             // performing a manual test on framerate - results slightly over 12 seconds which does
             // approximate 30 fps
@@ -57,6 +63,19 @@ namespace Asset.PresentationLayer
                 var finishtime = DateTime.Now - starttime;
                 print("**************" + finishtime.ToString());
             }
+        }
+
+        private void printCoordinates()
+        {
+            GameObject FindFPC = GameObject.Find("12Outer");
+            Vector3 point12Outer = FindFPC.transform.position;
+            FindFPC = GameObject.Find("4Outer");
+            Vector3 point4Outer = FindFPC.transform.position;
+            FindFPC = GameObject.Find("8Outer");
+            Vector3 point8Outer = FindFPC.transform.position;
+            print(point12Outer.x + ", " + point12Outer.y + ", " + point12Outer.z + "---" + 
+                point4Outer.x + ", " + point4Outer.y + ", " + point4Outer.z + "---" + 
+                point8Outer.x + ", " + point8Outer.y + ", " + point8Outer.z);
         }
     }
 }

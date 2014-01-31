@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-
 namespace Assets.BusinessLayer
 {
 	public class ShipMotion
@@ -16,11 +15,12 @@ namespace Assets.BusinessLayer
         private float relativeWavelengthFactor = 0.0f;
         private List<int> samplesPerWaveList = new List<int>();
         private List<float> heaveArray = new List<float>();
-        //private List<float> rollArray = new List<float>();
+        private List<float> rollArray = new List<float>();
         private List<float> pitchArray = new List<float>();
         private List<List<float>> motionArray = new List<List<float>>();
         private float waveSampleFactor = 30.0f;
         private float nextPitchAngle = 0.0f;
+        private float nextRollAngle = 0.0f;
         private float heaveValue = 0.0f;
 
         private readonly int NUMBER_OF_WAVES = 6;
@@ -41,11 +41,12 @@ namespace Assets.BusinessLayer
         public List<List<float>> calculateShipMotion()
         {
             populateHeaveArray();
-            //populateRollArray();
+            populateRollArray();
             populatePitchArray();
 
             motionArray.Add(heaveArray);
             motionArray.Add(pitchArray);
+            motionArray.Add(rollArray);
 
             return motionArray;
         }
@@ -92,7 +93,6 @@ namespace Assets.BusinessLayer
                     relativeWavelengthFactor = 1.0f;
                     break;
             }
-
         }
 
         private void populateHeaveArray()
@@ -116,9 +116,9 @@ namespace Assets.BusinessLayer
                     }
                     // Record the number of samples for each random wave
                     samplesPerWaveList.Add(samples);
-                }
 
-                stateStrategy.newWaveStatistics();
+                    stateStrategy.newWaveStatistics();
+                }
             }
             else
             {
@@ -137,7 +137,7 @@ namespace Assets.BusinessLayer
                     {
                         if ((int)currentWaveDirection != 90)
                         {
-                            nextPitchAngle = (stateStrategy.MaxPitch * relativeWavelengthFactor
+                            nextPitchAngle = (stateStrategy.MaxPitch 
                                 * (float)Math.Sin(2 * Math.PI * j / samplesPerWaveList[i]));
                         }
                         else
@@ -146,7 +146,6 @@ namespace Assets.BusinessLayer
                         }
                         pitchArray.Add(nextPitchAngle);
                     }
-                    
                 }
             }
             else
@@ -157,7 +156,30 @@ namespace Assets.BusinessLayer
 
         private void populateRollArray()
         {
+            if (currentSeaState != SeaState.SeaState0)
+            {
+                for (int i = 0; i < NUMBER_OF_WAVES; i++)
+                {
 
+                    for (int j = 0; j < samplesPerWaveList[i]; j++)
+                    {
+                        if ((int)currentWaveDirection != 0)
+                        {
+                            nextRollAngle = (stateStrategy.MaxRoll *
+                                (float)Math.Sin(2 * Math.PI * j / samplesPerWaveList[i]));
+                        }
+                        else
+                        {
+                            nextRollAngle = 0.0f;
+                        }
+                        rollArray.Add(nextRollAngle);
+                    }
+                }
+            }
+            else
+            {
+                rollArray.Add(stateStrategy.MaxRoll);
+            }
         }
 
 	}

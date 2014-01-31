@@ -31,6 +31,11 @@ namespace Assets.BusinessLayer
             get;
         }
 
+        float MaxRoll
+        {
+            get;
+        }
+
         void newWaveStatistics();
 	}
 }
