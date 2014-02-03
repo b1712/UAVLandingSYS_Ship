@@ -3,6 +3,7 @@ using System.Collections;
 using Assets.ControlLayer;
 using System.Collections.Generic;
 using System;
+using System.IO;
 
 namespace Asset.PresentationLayer
 {
@@ -21,6 +22,10 @@ namespace Asset.PresentationLayer
         private int modCount;
         DateTime starttime;
         DateTime finishtime;
+
+        //Generate test data
+        private List<float> testCoord = new List<float>();
+        private string data = "";
 
         void Start()
         {
@@ -62,6 +67,21 @@ namespace Asset.PresentationLayer
             {
                 var finishtime = DateTime.Now - starttime;
                 print("**************" + finishtime.ToString());
+
+                
+
+                foreach (var value in testCoord)
+                {
+                    data = data + value.ToString() + ",";
+                }
+
+                string fileName = currentSeaState.ToString() + "_" + currentWaveDirection.ToString()
+                    + "_" + currentShipSpeed.ToString();
+
+                System.IO.File.WriteAllText (@"C:\Users\Brian\Documents\GitHub\UAVLandingSYS_Ship\TestData_Ship\" 
+                    + fileName + ".txt", data);
+
+
             }
         }
 
@@ -73,9 +93,35 @@ namespace Asset.PresentationLayer
             Vector3 point4Outer = FindFPC.transform.position;
             FindFPC = GameObject.Find("8Outer");
             Vector3 point8Outer = FindFPC.transform.position;
-            print(point12Outer.x + ", " + point12Outer.y + ", " + point12Outer.z + "---" + 
-                point4Outer.x + ", " + point4Outer.y + ", " + point4Outer.z + "---" + 
-                point8Outer.x + ", " + point8Outer.y + ", " + point8Outer.z);
+            FindFPC = GameObject.Find("12Inner");
+            Vector3 point12Inner = FindFPC.transform.position;
+            FindFPC = GameObject.Find("4Inner");
+            Vector3 point4Inner = FindFPC.transform.position;
+            FindFPC = GameObject.Find("8Inner");
+            Vector3 point8Inner = FindFPC.transform.position;
+
+            testCoord.Add(point12Outer.x);
+            testCoord.Add(point12Outer.y);
+            testCoord.Add(point12Outer.z);
+            testCoord.Add(point4Outer.x);
+            testCoord.Add(point4Outer.y);
+            testCoord.Add(point4Outer.z);
+            testCoord.Add(point8Outer.x);
+            testCoord.Add(point8Outer.y);
+            testCoord.Add(point8Outer.z);
+            testCoord.Add(point12Inner.x);
+            testCoord.Add(point12Inner.y);
+            testCoord.Add(point12Inner.z);
+            testCoord.Add(point4Inner.x);
+            testCoord.Add(point4Inner.y);
+            testCoord.Add(point4Inner.z);
+            testCoord.Add(point8Inner.x);
+            testCoord.Add(point8Inner.y);
+            testCoord.Add(point8Inner.z);
+
+            //print(point12Outer.x + ", " + point12Outer.y + ", " + point12Outer.z + "---" + 
+            //    point4Outer.x + ", " + point4Outer.y + ", " + point4Outer.z + "---" + 
+            //    point8Outer.x + ", " + point8Outer.y + ", " + point8Outer.z);
         }
     }
 }
