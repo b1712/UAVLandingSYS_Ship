@@ -24,8 +24,10 @@ namespace Asset.PresentationLayer
         DateTime finishtime;
 
         //Generate test data
-        private List<float> testCoord = new List<float>();
-        private string data = "";
+        //private List<float> testCoord = new List<float>();
+        //private string data = "";
+        float[] coordinates = new float[18];
+
 
         void Start()
         {
@@ -63,26 +65,26 @@ namespace Asset.PresentationLayer
             // performing a manual test on framerate - results slightly over 12 seconds which does
             // approximate 30 fps
 
-            if (count == 360)
-            {
-                var finishtime = DateTime.Now - starttime;
-                print("**************" + finishtime.ToString());
+            //if (count == 360)
+            //{
+            //    var finishtime = DateTime.Now - starttime;
+            //    print("**************" + finishtime.ToString());
 
                 
 
-                foreach (var value in testCoord)
-                {
-                    data = data + value.ToString() + ",";
-                }
+            //    foreach (var value in testCoord)
+            //    {
+            //        data = data + value.ToString() + ",";
+            //    }
 
-                string fileName = currentSeaState.ToString() + "_" + currentWaveDirection.ToString()
-                    + "_" + currentShipSpeed.ToString();
+            //    string fileName = currentSeaState.ToString() + "_" + currentWaveDirection.ToString()
+            //        + "_" + currentShipSpeed.ToString();
 
-                System.IO.File.WriteAllText (@"C:\Users\Brian\Documents\GitHub\UAVLandingSYS_Ship\TestData_Ship\" 
-                    + fileName + ".txt", data);
+            //    System.IO.File.WriteAllText (@"C:\Users\Brian\Documents\GitHub\UAVLandingSYS_Ship\TestData_Ship\" 
+            //        + fileName + ".txt", data);
 
 
-            }
+            //}
         }
 
         private void printCoordinates()
@@ -100,24 +102,46 @@ namespace Asset.PresentationLayer
             FindFPC = GameObject.Find("8Inner");
             Vector3 point8Inner = FindFPC.transform.position;
 
-            testCoord.Add(point12Outer.x);
-            testCoord.Add(point12Outer.y);
-            testCoord.Add(point12Outer.z);
-            testCoord.Add(point4Outer.x);
-            testCoord.Add(point4Outer.y);
-            testCoord.Add(point4Outer.z);
-            testCoord.Add(point8Outer.x);
-            testCoord.Add(point8Outer.y);
-            testCoord.Add(point8Outer.z);
-            testCoord.Add(point12Inner.x);
-            testCoord.Add(point12Inner.y);
-            testCoord.Add(point12Inner.z);
-            testCoord.Add(point4Inner.x);
-            testCoord.Add(point4Inner.y);
-            testCoord.Add(point4Inner.z);
-            testCoord.Add(point8Inner.x);
-            testCoord.Add(point8Inner.y);
-            testCoord.Add(point8Inner.z);
+            coordinates[0] = point12Outer.x;
+            coordinates[1] = point12Outer.y;
+            coordinates[2] = point12Outer.z;
+            coordinates[3] = point4Outer.x;
+            coordinates[4] = point4Outer.y;
+            coordinates[5] = point4Outer.z;
+            coordinates[6] = point8Outer.x;
+            coordinates[7] = point8Outer.y;
+            coordinates[8] = point8Outer.z;
+
+            coordinates[9] = point12Inner.x;
+            coordinates[10] = point12Inner.y;
+            coordinates[11] = point12Inner.z;
+            coordinates[12] = point4Inner.x;
+            coordinates[13] = point4Inner.y;
+            coordinates[14] = point4Inner.z;
+            coordinates[15] = point8Inner.x;
+            coordinates[16] = point8Inner.y;
+            coordinates[17] = point8Inner.z;
+
+            //testCoord.Add(point12Outer.x);
+            //testCoord.Add(point12Outer.y);
+            //testCoord.Add(point12Outer.z);
+            //testCoord.Add(point4Outer.x);
+            //testCoord.Add(point4Outer.y);
+            //testCoord.Add(point4Outer.z);
+            //testCoord.Add(point8Outer.x);
+            //testCoord.Add(point8Outer.y);
+            //testCoord.Add(point8Outer.z);
+            //testCoord.Add(point12Inner.x);
+            //testCoord.Add(point12Inner.y);
+            //testCoord.Add(point12Inner.z);
+            //testCoord.Add(point4Inner.x);
+            //testCoord.Add(point4Inner.y);
+            //testCoord.Add(point4Inner.z);
+            //testCoord.Add(point8Inner.x);
+            //testCoord.Add(point8Inner.y);
+            //testCoord.Add(point8Inner.z);
+
+            shipController.postShipCoordinates(coordinates);
 
             //print(point12Outer.x + ", " + point12Outer.y + ", " + point12Outer.z + "---" + 
             //    point4Outer.x + ", " + point4Outer.y + ", " + point4Outer.z + "---" + 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Assets.BusinessLayer;
+using Assets.ServiceLayer;
 
 namespace Assets.ControlLayer
 {
@@ -10,6 +11,7 @@ namespace Assets.ControlLayer
 public class ShipModelController{
 
     ShipMotion shipMotion;
+    UDPConnectionShipToUAV connectionUAV;
 
     public List<List<float>> initialShipSetup(SeaState state, WaveDirection wind, ShipSpeed speed)
     {
@@ -21,6 +23,15 @@ public class ShipModelController{
         //string message = 
 
         return shipMotion.calculateShipMotion();
+
+        
+
+    }
+
+    public void postShipCoordinates(float [] coordinates)
+    {
+        connectionUAV = new UDPConnectionShipToUAV();
+        connectionUAV.postCoordinates(coordinates);
     }
  
 }
