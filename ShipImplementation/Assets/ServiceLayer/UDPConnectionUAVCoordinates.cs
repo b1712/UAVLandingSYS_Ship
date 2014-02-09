@@ -1,0 +1,92 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+using System.ComponentModel;
+
+namespace Assets.ServiceLayer
+{
+    class UDPConnectionUAVCoordinates : INotifyPropertyChanged
+    {
+        private Socket udpSocket;
+        private byte[] buffer;
+
+        public float[] floatArray = new float[1];
+
+        private float[] uavCoordinates = new float[1];
+
+        public float[] UAVCoordinates
+        {
+            get { return uavCoordinates; }
+            set
+            {
+                this.uavCoordinates = value;
+                NotifyPropertyChanged("UAVCoordinates");
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void Starter()
+        {
+            floatArray[0] = -130.0f;
+
+            udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            udpSocket.Bind(new IPEndPoint(IPAddress.Any, 9050));
+            buffer = new byte[1024];
+
+            EndPoint newClientEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            udpSocket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, 
+                                ref newClientEndPoint, DoReceiveFrom, udpSocket);
+        }
+
+        private void DoReceiveFrom(IAsyncResult asynResultr)
+        {
+            try
+            {
+                // Some of the code (next 7 lines and the code in the constructor) for this socket 
+                // configuration was taken from: 
+                // http://acrocontext.wordpress.com/2013/08/15/c-simple-udp-listener-in-asynchronous-way/
+                // and altered to suit the project requirements.
+                
+                Socket receiveSocket = (Socket)asynResultr.AsyncState;
+                EndPoint clientEndPoint = new IPEndPoint(IPAddress.Any, 0);
+
+                int datagramLength = receiveSocket.EndReceiveFrom(asynResultr, ref clientEndPoint);
+                byte[] data = new byte[datagramLength];
+
+                Array.Copy(buffer, data, datagramLength);
+
+                EndPoint newClientEndPoint = new IPEndPoint(IPAddress.Any, 0);
+
+                udpSocket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, 
+                                    ref newClientEndPoint, DoReceiveFrom, udpSocket);
+
+                floatArray = new float[data.Length / sizeof(float)];
+                int index = 0;
+                for (int i = 0; i < floatArray.Length; i++)
+                {
+                    floatArray[i] = BitConverter.ToSingle(data, index);
+                    index += sizeof(float);
+                }
+
+                UAVCoordinates = floatArray;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void NotifyPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+}

@@ -1,33 +1,34 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Assets.ControlLayer;
+
 using System.Collections.Generic;
 using System;
 using System.IO;
+
 
 namespace Asset.PresentationLayer
 {
 
     public class ShipBehaviourScript : MonoBehaviour
     {
+        #region class fields
+        
+        // first 3 fields are public so they are accessible from Unity Interface
         public SeaState currentSeaState = SeaState.SeaState0;
         public WaveDirection currentWaveDirection = WaveDirection.Zero_Degrees;
         public ShipSpeed currentShipSpeed = ShipSpeed.Half;
-        ShipModelController shipController;
+        private ShipModelController shipController;
         private List<float> heaveArray;
         private List<float> pitchArray;
         private List<float> rollArray;
         private List<List<float>> motionArray = new List<List<float>>();
         private int count;
         private int modCount;
-        DateTime starttime;
-        DateTime finishtime;
+        private DateTime starttime;
+        private float[] shipCoordinates = new float[18];
 
-        //Generate test data
-        //private List<float> testCoord = new List<float>();
-        //private string data = "";
-        float[] coordinates = new float[18];
-
+        #endregion
 
         void Start()
         {
@@ -57,37 +58,21 @@ namespace Asset.PresentationLayer
             
             count++;
 
-            //print(pitchArray[modCount].ToString() + "   " + heaveArray[modCount] + "   " + rollArray[modCount] + "   " + count);
-
-
-            printCoordinates();
+            recordCoordinates();
 
             // performing a manual test on framerate - results slightly over 12 seconds which does
             // approximate 30 fps
 
-            //if (count == 360)
-            //{
-            //    var finishtime = DateTime.Now - starttime;
-            //    print("**************" + finishtime.ToString());
+            if (count % 360 == 0)
+            {
+                var finishtime = DateTime.Now - starttime;
+                print("Time in seconds for 360 frames: " + finishtime.ToString());
+                starttime = DateTime.Now;
+            }
 
-                
-
-            //    foreach (var value in testCoord)
-            //    {
-            //        data = data + value.ToString() + ",";
-            //    }
-
-            //    string fileName = currentSeaState.ToString() + "_" + currentWaveDirection.ToString()
-            //        + "_" + currentShipSpeed.ToString();
-
-            //    System.IO.File.WriteAllText (@"C:\Users\Brian\Documents\GitHub\UAVLandingSYS_Ship\TestData_Ship\" 
-            //        + fileName + ".txt", data);
-
-
-            //}
         }
 
-        private void printCoordinates()
+        private void recordCoordinates()
         {
             GameObject FindFPC = GameObject.Find("12Outer");
             Vector3 point12Outer = FindFPC.transform.position;
@@ -102,50 +87,27 @@ namespace Asset.PresentationLayer
             FindFPC = GameObject.Find("8Inner");
             Vector3 point8Inner = FindFPC.transform.position;
 
-            coordinates[0] = point12Outer.x;
-            coordinates[1] = point12Outer.y;
-            coordinates[2] = point12Outer.z;
-            coordinates[3] = point4Outer.x;
-            coordinates[4] = point4Outer.y;
-            coordinates[5] = point4Outer.z;
-            coordinates[6] = point8Outer.x;
-            coordinates[7] = point8Outer.y;
-            coordinates[8] = point8Outer.z;
+            shipCoordinates[0] = point12Outer.x;
+            shipCoordinates[1] = point12Outer.y;
+            shipCoordinates[2] = point12Outer.z;
+            shipCoordinates[3] = point4Outer.x;
+            shipCoordinates[4] = point4Outer.y;
+            shipCoordinates[5] = point4Outer.z;
+            shipCoordinates[6] = point8Outer.x;
+            shipCoordinates[7] = point8Outer.y;
+            shipCoordinates[8] = point8Outer.z;
 
-            coordinates[9] = point12Inner.x;
-            coordinates[10] = point12Inner.y;
-            coordinates[11] = point12Inner.z;
-            coordinates[12] = point4Inner.x;
-            coordinates[13] = point4Inner.y;
-            coordinates[14] = point4Inner.z;
-            coordinates[15] = point8Inner.x;
-            coordinates[16] = point8Inner.y;
-            coordinates[17] = point8Inner.z;
+            shipCoordinates[9] = point12Inner.x;
+            shipCoordinates[10] = point12Inner.y;
+            shipCoordinates[11] = point12Inner.z;
+            shipCoordinates[12] = point4Inner.x;
+            shipCoordinates[13] = point4Inner.y;
+            shipCoordinates[14] = point4Inner.z;
+            shipCoordinates[15] = point8Inner.x;
+            shipCoordinates[16] = point8Inner.y;
+            shipCoordinates[17] = point8Inner.z;
 
-            //testCoord.Add(point12Outer.x);
-            //testCoord.Add(point12Outer.y);
-            //testCoord.Add(point12Outer.z);
-            //testCoord.Add(point4Outer.x);
-            //testCoord.Add(point4Outer.y);
-            //testCoord.Add(point4Outer.z);
-            //testCoord.Add(point8Outer.x);
-            //testCoord.Add(point8Outer.y);
-            //testCoord.Add(point8Outer.z);
-            //testCoord.Add(point12Inner.x);
-            //testCoord.Add(point12Inner.y);
-            //testCoord.Add(point12Inner.z);
-            //testCoord.Add(point4Inner.x);
-            //testCoord.Add(point4Inner.y);
-            //testCoord.Add(point4Inner.z);
-            //testCoord.Add(point8Inner.x);
-            //testCoord.Add(point8Inner.y);
-            //testCoord.Add(point8Inner.z);
-
-            shipController.postShipCoordinates(coordinates);
-
-            //print(point12Outer.x + ", " + point12Outer.y + ", " + point12Outer.z + "---" + 
-            //    point4Outer.x + ", " + point4Outer.y + ", " + point4Outer.z + "---" + 
-            //    point8Outer.x + ", " + point8Outer.y + ", " + point8Outer.z);
+            shipController.postShipCoordinates(shipCoordinates);
         }
     }
 }

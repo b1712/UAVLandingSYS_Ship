@@ -11,7 +11,7 @@ namespace Assets.ControlLayer
 public class ShipModelController{
 
     ShipMotion shipMotion;
-    UDPConnectionShipToUAV connectionUAV;
+    UDPConnectionShipCoordinates connectionUAV;
 
     public List<List<float>> initialShipSetup(SeaState state, WaveDirection wind, ShipSpeed speed)
     {
@@ -28,10 +28,10 @@ public class ShipModelController{
 
     }
 
-    public void postShipCoordinates(float [] coordinates)
+    public void postShipCoordinates(float[] coordinates)
     {
-        connectionUAV = new UDPConnectionShipToUAV();
-        connectionUAV.postCoordinates(coordinates);
+        connectionUAV = new UDPConnectionShipCoordinates();
+        connectionUAV.postShipCoordinates(coordinates);
     }
  
 }
