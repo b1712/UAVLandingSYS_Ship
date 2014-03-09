@@ -6,9 +6,10 @@ using System.ComponentModel;
 namespace Asset.PresentationLayer
 {
 
-    public class UAVBehaviourScript : MonoBehaviour
+    public class UavBehaviourScript : MonoBehaviour
     {
-        UDPConnectionUAVCoordinates udpUAV = new UDPConnectionUAVCoordinates();
+        private readonly UdpConnectionUavCoordinates udpUAV = 
+                                new UdpConnectionUavCoordinates();
 
         #region class fields
 
@@ -29,7 +30,7 @@ namespace Asset.PresentationLayer
 
         void uavCoordinatesPropertyChange(object sender, PropertyChangedEventArgs e)
         {
-            uavCoordinates = udpUAV.UAVCoordinates;
+            uavCoordinates = udpUAV.UavCoordinates;
             xCoord = uavCoordinates[0];
             yCoord = uavCoordinates[1];
             zCoord = uavCoordinates[2];

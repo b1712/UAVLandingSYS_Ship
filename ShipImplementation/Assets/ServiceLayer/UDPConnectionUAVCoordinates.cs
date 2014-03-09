@@ -1,29 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.ComponentModel;
 
 namespace Assets.ServiceLayer
 {
-    class UDPConnectionUAVCoordinates : INotifyPropertyChanged
+    class UdpConnectionUavCoordinates : INotifyPropertyChanged
     {
-        private Socket udpSocket;
-        private byte[] buffer;
+        private Socket _udpSocket;
+        private byte[] _buffer;
 
-        public float[] floatArray = new float[1];
+        public float[] FloatArray = new float[1];
 
-        private float[] uavCoordinates = new float[1];
+        private float[] _uavCoordinates = new float[1];
 
-        public float[] UAVCoordinates
+        public float[] UavCoordinates
         {
-            get { return uavCoordinates; }
+            get { return _uavCoordinates; }
             set
             {
-                this.uavCoordinates = value;
+                _uavCoordinates = value;
                 NotifyPropertyChanged("UAVCoordinates");
             }
         }
@@ -32,15 +28,15 @@ namespace Assets.ServiceLayer
 
         public void Starter()
         {
-            floatArray[0] = -130.0f;
+            FloatArray[0] = -130.0f;
 
-            udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            udpSocket.Bind(new IPEndPoint(IPAddress.Any, 9050));
-            buffer = new byte[1024];
+            _udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            _udpSocket.Bind(new IPEndPoint(IPAddress.Any, 9050));
+            _buffer = new byte[1024];
 
             EndPoint newClientEndPoint = new IPEndPoint(IPAddress.Any, 0);
-            udpSocket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, 
-                                ref newClientEndPoint, DoReceiveFrom, udpSocket);
+            _udpSocket.BeginReceiveFrom(_buffer, 0, _buffer.Length, SocketFlags.None, 
+                                ref newClientEndPoint, DoReceiveFrom, _udpSocket);
         }
 
         private void DoReceiveFrom(IAsyncResult asynResultr)
@@ -52,28 +48,30 @@ namespace Assets.ServiceLayer
                 // http://acrocontext.wordpress.com/2013/08/15/c-simple-udp-listener-in-asynchronous-way/
                 // and altered to suit the project requirements.
                 
-                Socket receiveSocket = (Socket)asynResultr.AsyncState;
+                var receiveSocket = (Socket)asynResultr.AsyncState;
                 EndPoint clientEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
                 int datagramLength = receiveSocket.EndReceiveFrom(asynResultr, ref clientEndPoint);
-                byte[] data = new byte[datagramLength];
+                var data = new byte[datagramLength];
 
-                Array.Copy(buffer, data, datagramLength);
+                Array.Copy(_buffer, data, datagramLength);
 
                 EndPoint newClientEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
-                udpSocket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, 
-                                    ref newClientEndPoint, DoReceiveFrom, udpSocket);
+                _udpSocket.BeginReceiveFrom(_buffer, 0, _buffer.Length, SocketFlags.None, 
+                                    ref newClientEndPoint, DoReceiveFrom, _udpSocket);
 
-                floatArray = new float[data.Length / sizeof(float)];
+                FloatArray = new float[data.Length / sizeof(float)];
+
                 int index = 0;
-                for (int i = 0; i < floatArray.Length; i++)
+
+                for (int i = 0; i < FloatArray.Length; i++)
                 {
-                    floatArray[i] = BitConverter.ToSingle(data, index);
+                    FloatArray[i] = BitConverter.ToSingle(data, index);
                     index += sizeof(float);
                 }
 
-                UAVCoordinates = floatArray;
+                UavCoordinates = FloatArray;
             }
             catch (Exception ex)
             {

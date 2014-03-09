@@ -1,39 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Assets.BusinessLayer;
 using Assets.ServiceLayer;
 
 namespace Assets.ControlLayer
 {
-
-public class ShipModelController{
-
-    ShipMotion shipMotion;
-    UDPConnectionShipCoordinates connectionUAV;
-
-    public List<List<float>> initialShipSetup(SeaState state, WaveDirection wind, ShipSpeed speed)
+    public class ShipModelController
     {
-        //will be returning an array of floats
-        
-        shipMotion = new ShipMotion(state, wind, speed);
+        private ShipMotion _shipMotion;
+        private UdpConnectionShipCoordinates _connectionUav;
 
-        // float array = 
-        //string message = 
+        public List<List<float>> InitialShipSetup(SeaState state, WaveDirection wind, ShipSpeed speed)
+        {
+            _shipMotion = new ShipMotion(state, wind, speed);
 
-        return shipMotion.calculateShipMotion();
+            return _shipMotion.calculateShipMotion();
+        }
 
-        
-
+        public void PostShipCoordinates(float[] coordinates)
+        {
+            _connectionUav = new UdpConnectionShipCoordinates();
+            _connectionUav.PostShipCoordinates(coordinates);
+        }
     }
-
-    public void postShipCoordinates(float[] coordinates)
-    {
-        connectionUAV = new UDPConnectionShipCoordinates();
-        connectionUAV.postShipCoordinates(coordinates);
-    }
- 
-}
 
 }

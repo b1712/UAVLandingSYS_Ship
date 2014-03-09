@@ -1,41 +1,37 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System;
 
 namespace Assets.ServiceLayer
 {
 
-    public class UDPConnectionShipCoordinates
+    public class UdpConnectionShipCoordinates
     {
         #region class fields
 
-        private string address = "192.168.1.100";
-        //private string address = "127.0.0.1";
-        private int port = 9060;
-        private IPEndPoint ipep;
-        private Socket server;
-        private byte[] byteArray;
+        private const string Address = "192.168.1.100";
+        private const int Port = 9060;
+        private readonly IPEndPoint _ipep;
+        private readonly Socket _server;
+        private byte[] _byteArray;
 
         #endregion
 
-        public UDPConnectionShipCoordinates()
+        public UdpConnectionShipCoordinates()
         {
-            ipep = new IPEndPoint(IPAddress.Parse(address), port);
+            _ipep = new IPEndPoint(IPAddress.Parse(Address), Port);
 
-            server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            _server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         }
         
-        public void postShipCoordinates(float [] coordinates)
+        public void PostShipCoordinates(float [] coordinates)
         {
             try
             {
-                byteArray = new byte[coordinates.Length * 4];
-                Buffer.BlockCopy(coordinates, 0, byteArray, 0, byteArray.Length);
+                _byteArray = new byte[coordinates.Length * 4];
+                Buffer.BlockCopy(coordinates, 0, _byteArray, 0, _byteArray.Length);
 
-                server.SendTo(byteArray, byteArray.Length, SocketFlags.None, ipep);
+                _server.SendTo(_byteArray, _byteArray.Length, SocketFlags.None, _ipep);
             }
             catch (Exception ex)
             {
